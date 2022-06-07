@@ -295,7 +295,7 @@ public final class Main extends Object {
     // -----------------------------------------------------------------------------------------------------
     // 9. Modules
     
-    assert Repository.getDefault() instanceof NbRepository : "Has to be NbRepository: " + Repository.getDefault(); // NOI18N
+    assert Repository.getDefault() instanceof NbRepository : "Has to be NbRepository: " + Repository.getDefault() + " Initialization stack: " + Repository.getDefault().when; // NOI18N
     getModuleSystem ();
     
     // property editors are registered in modules, so wait a while before loading them

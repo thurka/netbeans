@@ -29,7 +29,9 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.net.URL;
@@ -37,7 +39,9 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
+
 import static org.openide.filesystems.FileSystem.LOG;
+
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -309,12 +313,19 @@ public class Repository implements Serializable {
             }
         };
 
+    public final String when;
+
     /** Creates new instance of filesystem pool and
     * registers it as the default one. Also registers the default filesystem.
     *
     * @param def the default filesystem
     */
     public Repository(FileSystem def) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        new Exception("initialized").printStackTrace(pw);
+        pw.flush();
+        this.when = sw.toString();
         this.system = def;
         init();
     }
