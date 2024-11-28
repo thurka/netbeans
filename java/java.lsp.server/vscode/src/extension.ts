@@ -52,7 +52,7 @@ import * as launcher from './nbcode';
 import {NbTestAdapter} from './testAdapter';
 import { asRanges, StatusMessageRequest, ShowStatusMessageParams, QuickPickRequest, InputBoxRequest, MutliStepInputRequest, TestProgressNotification, DebugConnector,
          TextEditorDecorationCreateRequest, TextEditorDecorationSetNotification, TextEditorDecorationDisposeNotification, HtmlPageRequest, HtmlPageParams,
-         ExecInHtmlPageRequest, SetTextEditorDecorationParams, ProjectActionParams, UpdateConfigurationRequest, QuickPickStep, InputBoxStep, SaveDocumentsRequest, SaveDocumentRequestParams
+         ExecInHtmlPageRequest, SetTextEditorDecorationParams, ProjectActionParams, UpdateConfigurationRequest, QuickPickStep, InputBoxStep, SaveDocumentsRequest, SaveDocumentRequestParams, OutputMessage, WriteOutputRequest, ShowOutputRequest, CloseOutputRequest, ResetOutputRequest 
 } from './protocol';
 import * as launchConfigurations from './launchConfigurations';
 import { createTreeViewService, TreeViewService, TreeItemDecorator, Visualizer, CustomizableTreeDataProvider } from './explorer';
@@ -80,6 +80,8 @@ let nbProcess : ChildProcess | null = null;
 let debugPort: number = -1;
 let consoleLog: boolean = !!process.env['ENABLE_CONSOLE_LOG'];
 let specifiedJDKWarned : string[] = [];
+
+const outputChannels: Map<string, vscode.OutputChannel> = new Map();
 
 export class NbLanguageClient extends LanguageClient {
     private _treeViewService: TreeViewService;
@@ -375,6 +377,15 @@ function getValueAfterPrefix(input: string | undefined, prefix: string): string 
         }
     }
     return '';
+}
+
+function getOrCreateOutputChannel(name: string): vscode.OutputChannel {
+    let outputChannel = outputChannels.get(name);
+    if (!outputChannel) {
+        outputChannel = vscode.window.createOutputChannel(name);
+        outputChannels.set(name, outputChannel);
+    }
+    return outputChannel;
 }
 
 export function activate(context: ExtensionContext): VSNetBeansAPI {    
@@ -1507,6 +1518,23 @@ function doActivateWithJDK(specifiedJDK: string | null, context: ExtensionContex
             let decorationType = vscode.window.createTextEditorDecorationType(param);
             decorations.set(decorationType.key, decorationType);
             return decorationType.key;
+        });
+        c.onRequest(WriteOutputRequest.type, param => {
+            const outputChannel = getOrCreateOutputChannel(param.outputName);
+            outputChannel.append(param.message);
+        });
+        c.onRequest(ShowOutputRequest.type, param => {
+            const outputChannel = getOrCreateOutputChannel(param);
+            outputChannel.show();
+        });
+        c.onRequest(CloseOutputRequest.type, param => {
+            const outputChannel = getOrCreateOutputChannel(param);
+            outputChannel.clear();
+            outputChannel.hide();
+        });
+        c.onRequest(ResetOutputRequest.type, param => {
+            const outputChannel = getOrCreateOutputChannel(param);
+            outputChannel.clear();
         });
         c.onNotification(TextEditorDecorationSetNotification.type, param => {
             let decorationType = decorations.get(param.key);
