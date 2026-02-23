@@ -243,6 +243,7 @@ public class MarkdownViewerElement implements MultiViewElement {
                 HTMLEditorKit kit = (HTMLEditorKit) viewer.getEditorKit();
 
                 HTMLDocument doc = (HTMLDocument) viewer.getDocument();
+                doc.setBase(dataObject.getPrimaryFile().getParent().toURL());
 
                 // Would be better to create some diff and update the changed elemets
                 doc.remove(0, doc.getLength());
