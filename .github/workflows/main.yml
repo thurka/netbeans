@@ -41,6 +41,11 @@ on:
   # keep in mind this will have ALL tests enabled
   workflow_dispatch:
 
+# read access for repo checkout and cache restore action; jobs may request more where needed
+permissions:
+  contents: read
+  actions: read
+
 # cancel other PR workflow run in the same head-base group if it exists (e.g. during PR syncs)
 # if this is not a PR run (no github.head_ref and github.base_ref defined), use an UID as group
 concurrency: 
@@ -134,6 +139,9 @@ jobs:
     name: Build Clusters on JDK ${{ matrix.java }}
     if: contains(github.event.pull_request.labels.*.name, 'ci:no-build') == false
     runs-on: ubuntu-latest
+    # write access for cache
+    permissions:
+      actions: write
     timeout-minutes: 40
     strategy:
       matrix:
