@@ -3356,7 +3356,6 @@ public final class JavaCompletionTask<T> extends BaseTask {
         }
         List<? extends Tree> members = cls.getMembers();
 
-        Tree lastParam = null;
         for (Tree member : members) {
             if (member.getKind() == Tree.Kind.VARIABLE) {
                 ModifiersTree modifiers = ((VariableTree) member).getModifiers();
@@ -3367,29 +3366,9 @@ public final class JavaCompletionTask<T> extends BaseTask {
                     if (paramPos == Diagnostic.NOPOS || offset <= paramPos) {
                         break;
                     }
-                    lastParam = member;
                     startPos = paramPos;
                 }
             }
-
-            if (lastParam != null) {
-                TokenSequence<JavaTokenId> first = findFirstNonWhitespaceToken(env, startPos, offset);
-                if (first != null && first.token().id() == JavaTokenId.COMMA) {
-                    controller.toPhase(Phase.ELEMENTS_RESOLVED);
-                    env.addToExcludes(controller.getTrees().getElement(path));
-                    addTypes(env, EnumSet.of(INTERFACE, ANNOTATION_TYPE), null);
-                    return;
-                }
-                if (first != null && first.token().id() == JavaTokenId.RPAREN) {
-                    first = nextNonWhitespaceToken(first);
-                    if (!tu.isInterface(cls) && first.token().id() == JavaTokenId.LBRACE) {
-                        addKeyword(env, IMPLEMENTS_KEYWORD, SPACE, false);
-                    }
-
-                }
-                return;
-            }
-
         }
 
         TypeParameterTree lastTypeParam = null;
@@ -3405,7 +3384,7 @@ public final class JavaCompletionTask<T> extends BaseTask {
         TokenSequence<JavaTokenId> lastNonWhitespaceToken = findLastNonWhitespaceToken(env, startPos, offset);
         if (lastNonWhitespaceToken != null) {
             switch (lastNonWhitespaceToken.token().id()) {
-                case LPAREN:
+                case COMMA, LPAREN:
                     addMemberModifiers(env, Collections.<Modifier>emptySet(), true);
                     addClassTypes(env, null);
                     break;
