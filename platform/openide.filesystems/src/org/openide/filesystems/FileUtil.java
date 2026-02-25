@@ -2138,7 +2138,7 @@ public final class FileUtil extends Object {
      * @since org.openide/1 4.42
      * @deprecated Just use {@link javax.swing.JFileChooser#setCurrentDirectory}. JDK 6 does not have this bug.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void preventFileChooserSymlinkTraversal(javax.swing.JFileChooser chooser, File currentDirectory) {
         chooser.setCurrentDirectory(currentDirectory);
     }
