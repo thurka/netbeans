@@ -115,7 +115,7 @@ public class ExportZIP extends JPanel {
                         }
                         StatusDisplayer.getDefault().setStatusText(MSG_created(zip));
                         try {
-                            Desktop.getDesktop().open(zip);
+                            Desktop.getDesktop().open(zip.getParentFile());
                         } catch (Exception x) {
                             LOG.log(Level.FINE, null, x);
                         }
