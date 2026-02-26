@@ -180,25 +180,25 @@ jobs:
 
       - name: Upload Workspace
         if: ${{ (matrix.java == '21') && success() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
-          name: build
           path: /tmp/build.tar.zst
-          compression-level: 0
+          archive: false
           retention-days: 2
           if-no-files-found: error
           
       - name: Create Dev Build
         if: ${{ matrix.java == '21' && contains(github.event.pull_request.labels.*.name, 'ci:dev-build') && success() }}
-        run: ant $OPTS -quiet -Dcluster.config=$CLUSTER_CONFIG zip-cluster-config
+        run: |
+          ant $OPTS -quiet -Dcluster.config=$CLUSTER_CONFIG zip-cluster-config
+          mv nbbuild/NetBeans-*.zip nbbuild/dev-build_${{github.event.pull_request.number || github.run_id}}.zip
 
       - name: Upload Dev Build
         if: ${{ matrix.java == '21' && contains(github.event.pull_request.labels.*.name, 'ci:dev-build') && success() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
-          name: dev-build_${{github.event.pull_request.number || github.run_id}}
-          path: nbbuild/NetBeans-*.zip
-          compression-level: 0
+          path: nbbuild/dev-build_*.zip
+          archive: false
           retention-days: 7
           if-no-files-found: error
 
@@ -267,9 +267,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       # tar on MacOS is not aware of zstd "tar --zstd -xf build.tar.zst" doesn't work
       - name: Extract on MacOS
@@ -359,9 +359,9 @@ jobs:
 
       - name: Download Build
         if: ${{ needs.base-build.result == 'success' && !cancelled() }}
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         if: ${{ needs.base-build.result == 'success' && !cancelled() }}
@@ -403,9 +403,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -494,9 +494,9 @@ jobs:
           distribution: ${{ env.DEFAULT_JAVA_DISTRIBUTION }}
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -544,9 +544,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -876,9 +876,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -1007,9 +1007,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -1170,9 +1170,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -1305,9 +1305,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -1494,9 +1494,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -1550,9 +1550,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -1610,9 +1610,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -1655,9 +1655,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -1833,9 +1833,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -1883,9 +1883,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -1934,9 +1934,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -1982,9 +1982,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -2227,9 +2227,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -2320,9 +2320,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -2399,9 +2399,9 @@ jobs:
       # - - -
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -2528,9 +2528,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -2569,9 +2569,9 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download Build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
-          name: build
+          name: build.tar.zst 
 
       - name: Extract
         run: tar --zstd -xf build.tar.zst
@@ -2653,12 +2653,12 @@ jobs:
       - name: Delete Workspace Artifact
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b # v5.1.0
         with:
-          name: build
+          name: build.tar.zst 
           useGlob: false
 
       - name: Delete Dev Build Artifact
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b # v5.1.0
         if: ${{ contains(github.event.pull_request.labels.*.name, 'ci:dev-build') && cancelled() }}
         with:
-          name: dev-build_${{github.event.pull_request.number || github.run_id}}
+          name: dev-build_${{github.event.pull_request.number || github.run_id}}.zip
           useGlob: false
